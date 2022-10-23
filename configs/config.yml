@@ -1,0 +1,5 @@
+port: 8001
+
+# Syscall commands
+shutdown: "LINUX_REBOOT_CMD_POWER_OFF"
+reboot: "LINUX_REBOOT_CMD_RESTART"
