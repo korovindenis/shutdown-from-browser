@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"regexp"
 	"time"
 
 	rice "github.com/GeertJohan/go.rice"
@@ -71,10 +70,12 @@ type Sfb struct {
 }
 
 // Received from frontend
-type PowerMode struct {
-	Mode string
-	When string
+type Server struct {
+	Mode         string
+	TimeShutDown string
 }
+
+var myServer Server
 
 func NewSfb() *Sfb {
 	// Define the rice box with the frontend static files
@@ -122,21 +123,31 @@ func (s *Sfb) Run(port string) error {
 }
 
 func powerHandler(w http.ResponseWriter, r *http.Request) {
-	// get request
-	var pcState PowerMode
-	if err := json.NewDecoder(r.Body).Decode(&pcState); (err != nil) || (pcState.Mode != "shutdown" && pcState.Mode != "reboot" || !IsISO8601Date(pcState.When)) {
+	var tmpServer Server
+	// validate input
+	if err := json.NewDecoder(r.Body).Decode(&tmpServer); (err != nil) || (tmpServer.Mode != "shutdown" && tmpServer.Mode != "reboot") {
+		log.Printf("Error validate server Mode : %s", err)
+
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	log.Println("Received", pcState.Mode)
+	// validate timestamp
+	if _, err := time.Parse(time.RFC3339, tmpServer.TimeShutDown); err != nil {
+		log.Printf("Error validate timestamp : %s", err)
+
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	myServer = tmpServer
+	log.Println("Received:", myServer)
 
 	// send response
-	response := make(map[string]string)
-	response["message"] = "Server is " + pcState.Mode
-
-	jsonResp, err := json.Marshal(response)
+	jsonResp, err := json.Marshal(map[string]string{"message": "Server is " + myServer.Mode})
 	if err != nil {
-		log.Fatalf("Error JSON Marshal : %s", err)
+		log.Printf("Error JSON Marshal : %s", err)
+
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -144,18 +155,18 @@ func powerHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResp)
 
 	// bye
-	log.Println("Run:", viper.GetString(pcState.Mode))
+	log.Println("Run:", viper.GetString(myServer.Mode))
 }
 
 func getTimePOHandler(w http.ResponseWriter, r *http.Request) {
-	response := make(map[string]string)
-	response["message"] = "hi"
-
-	jsonResp, err := json.Marshal(response)
+	jsonResp, err := json.Marshal(map[string]string{"time": myServer.TimeShutDown})
 	if err != nil {
-		log.Fatalf("Error JSON Marshal : %s", err)
+		log.Printf("Error JSON Marshal : %s", err)
+
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-	time.Sleep(8 * time.Second)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(jsonResp)
@@ -165,17 +176,12 @@ func serveAppHandler(app *rice.Box) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		indexFile, err := app.Open("index.html")
 		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			log.Printf("Error open index.html : %s", err)
+
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
 		http.ServeContent(w, r, "index.html", time.Time{}, indexFile)
 	}
-}
-
-func IsISO8601Date(_date string) bool {
-	ISO8601DateRegexString := "^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])(?:T|\\s)(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])?(Z)?.[0-9]{3}[A-Z]{1}$"
-	ISO8601DateRegex := regexp.MustCompile(ISO8601DateRegexString)
-
-	return ISO8601DateRegex.MatchString(_date)
 }

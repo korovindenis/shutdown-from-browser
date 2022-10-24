@@ -1,9 +1,9 @@
 // Request to backend
-export default async function HandleClick(mode, when=(new Date()).toISOString()){
+export default async function HandleClick(mode, TimeShutDown=(new Date()).toISOString()){
     try {
       const response = await fetch('/api/v1/server-power/', {
         method: 'POST',
-        body: JSON.stringify({ mode, when }),
+        body: JSON.stringify({ mode, TimeShutDown }),
         headers: {
           Accept: 'application/json',
         },
