@@ -10,7 +10,7 @@ import (
 	"time"
 
 	rice "github.com/GeertJohan/go.rice"
-	"github.com/spf13/viper"
+	"github.com/korovindenis/shutdown-from-browser/pkg/countdown"
 )
 
 /*
@@ -69,13 +69,7 @@ type Sfb struct {
 	httpServer *http.Server
 }
 
-// Received from frontend
-type Server struct {
-	Mode         string
-	TimeShutDown string
-}
-
-var myServer Server
+var myServer countdown.Server
 
 func NewSfb() *Sfb {
 	// Define the rice box with the frontend static files
@@ -84,12 +78,14 @@ func NewSfb() *Sfb {
 		log.Fatal(err)
 	}
 
-	// Define endpoint
+	// // Define endpoint
 	http.HandleFunc("/", serveAppHandler(appBox))
 	http.HandleFunc("/api/v1/server-power/", powerHandler)
 	http.HandleFunc("/api/v1/get-time-autopoweroff/", getTimePOHandler)
 	// server static files
 	http.Handle("/static/", http.FileServer(appBox.HTTPBox()))
+
+	go countdown.New(&myServer)
 
 	return &Sfb{}
 }
@@ -123,7 +119,7 @@ func (s *Sfb) Run(port string) error {
 }
 
 func powerHandler(w http.ResponseWriter, r *http.Request) {
-	var tmpServer Server
+	var tmpServer countdown.Server
 	// validate input
 	if err := json.NewDecoder(r.Body).Decode(&tmpServer); (err != nil) || (tmpServer.Mode != "shutdown" && tmpServer.Mode != "reboot") {
 		log.Printf("Error validate server Mode : %s", err)
@@ -153,9 +149,6 @@ func powerHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Write(jsonResp)
-
-	// bye
-	log.Println("Run:", viper.GetString(myServer.Mode))
 }
 
 func getTimePOHandler(w http.ResponseWriter, r *http.Request) {

@@ -1,10 +1,16 @@
 package countdown
 
 import (
-	"fmt"
-	"os"
+	"log"
 	"time"
+
+	"github.com/spf13/viper"
 )
+
+type Server struct {
+	Mode         string
+	TimeShutDown string
+}
 
 type countdown struct {
 	t int
@@ -14,27 +20,22 @@ type countdown struct {
 	s int
 }
 
-func NewCountdown(mode, deadline string) {
-	if deadline == "" {
-		os.Exit(1)
+func New(s *Server) {
+	for s.Mode == "" {
+		time.Sleep(time.Second * 5)
 	}
-
-	v, err := time.Parse(time.RFC3339, deadline)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
 	for range time.Tick(1 * time.Second) {
+		v, _ := time.Parse(time.RFC3339, s.TimeShutDown)
 		timeRemaining := getTimeRemaining(v)
 
 		if timeRemaining.t <= 0 {
-			fmt.Println("Countdown reached!")
-			break
+			// bye
+			log.Println("Run:", viper.GetString(s.Mode))
 		}
 
-		fmt.Printf("Days: %d Hours: %d Minutes: %d Seconds: %d\n", timeRemaining.d, timeRemaining.h, timeRemaining.m, timeRemaining.s)
+		log.Printf("Time for %s - Days: %d Hours: %d Minutes: %d Seconds: %d\n", s.Mode, timeRemaining.d, timeRemaining.h, timeRemaining.m, timeRemaining.s)
 	}
+
 }
 
 func getTimeRemaining(t time.Time) countdown {
