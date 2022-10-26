@@ -33,13 +33,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App() {
+  const compareTime = (dt) => {
+    const res = new Date(new Date(dt)-new Date()).getHours() || 0
+    return res;
+  }
   const [whenAutoPowerOff, setItems] = useState();
-
-    useEffect(() => {
-      fetch('/api/v1/get-time-autopoweroff/')
-        .then(res => res.json())
-        .then(data => setItems(data));
-    }, []);
+  useEffect(() => {
+    fetch('/api/v1/get-time-autopoweroff/')
+      .then(res => res.json())
+      .then(data => setItems(data));
+  }, []);
 
   const [autoPowerOff, setautoPowerOff] = useState("is disable");
   const sliderChangeValue = (event, value) => {
@@ -78,7 +81,7 @@ function App() {
                   Auto-PowerOff {autoPowerOff}
                 </Typography>
                 <Slider
-                  defaultValue={whenAutoPowerOff}
+                  defaultValue={compareTime(whenAutoPowerOff.time)}
                   aria-labelledby="discrete-slider"
                   valueLabelDisplay="auto"
                   onChange={sliderChangeValue}

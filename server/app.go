@@ -152,7 +152,7 @@ func powerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getTimePOHandler(w http.ResponseWriter, r *http.Request) {
-	jsonResp, err := json.Marshal(map[string]string{"time": myServer.TimeShutDown})
+	jsonResp, err := json.Marshal(map[string]string{"time": "2022-10-26T23:11:45.664Z"}) //myServer.TimeShutDown})
 	if err != nil {
 		log.Printf("Error JSON Marshal : %s", err)
 
