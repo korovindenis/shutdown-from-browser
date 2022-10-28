@@ -148,7 +148,10 @@ func powerHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Write(jsonResp)
+
+	if _, err := w.Write(jsonResp); err != nil {
+		log.Printf("Error return json : %s", err)
+	}
 }
 
 func getTimePOHandler(w http.ResponseWriter, r *http.Request) {
@@ -162,7 +165,10 @@ func getTimePOHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Write(jsonResp)
+
+	if _, err := w.Write(jsonResp); err != nil {
+		log.Printf("Error return json : %s", err)
+	}
 }
 
 func serveAppHandler(app *rice.Box) http.HandlerFunc {
