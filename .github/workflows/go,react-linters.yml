@@ -61,5 +61,5 @@ jobs:
         node-version: '12'
     - run: npm ci
     - name: Run Tests
-        working-directory: ./web
+      working-directory: ./web
     - run: npm run lint
