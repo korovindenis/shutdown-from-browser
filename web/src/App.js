@@ -1,7 +1,6 @@
-import {useState,useEffect} from 'react';
+import React, { Component,useState,useEffect }  from 'react';
 import homer from './homer.webp';
 import './App.css';
-//import GetTimePO from './components/GetTimePO';
 import MyButton from './components/MyButton';
 import MyCountdown from './components/MyCountdown';
 import { makeStyles } from '@material-ui/core/styles';
@@ -71,8 +70,8 @@ function App() {
       <div className="App-main">
         <img src={homer} className="App-logo" alt="logo" />
         <div>
-          {buttons.map((button) => (
-            <MyButton text={button.text} css={button.css}/>
+          {buttons.map(button => (
+            <MyButton key={button.text} text={button.text} css={button.css}/>
           ))}
           <div className={classes.autoPowerOff}>
             {!whenAutoPowerOff ? <p>Loading...</p> : 

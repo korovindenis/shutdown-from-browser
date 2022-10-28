@@ -1,4 +1,5 @@
-import { Component } from 'react';
+import Component from 'react';
+import string from 'prop-types';
 
 class GetTimePO extends Component {
     constructor(){
@@ -13,7 +14,7 @@ class GetTimePO extends Component {
         fetch('/api/v1/get-time-autopoweroff/', {
               headers: {
                 'content-type': 'application/json',
-                accept: 'application/json',
+                'accept': 'application/json',
               },
             })
             .then(res => res.json())
@@ -32,5 +33,9 @@ class GetTimePO extends Component {
       )
     }
   }
+
+  GetTimePO.propTypes = {
+    component: string,
+  };
 
   export default GetTimePO; 
