@@ -1,6 +1,11 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
 
 jobs:
   build:
@@ -17,8 +22,9 @@ jobs:
         with:
           node_version: ${{ matrix.node_version }}
 
-      - name: run CI
+      - name: run eslint
         run: |
           cd ./web
           npm install
+          npm rebuild node-sass
           npm run lint
