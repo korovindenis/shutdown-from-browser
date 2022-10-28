@@ -13,6 +13,6 @@ jobs:
       with:
         node-version: '12'
     - run: npm ci
-    - name: Run Tests
       working-directory: ./web
+    - name: Run Tests
       run: npm run lint
