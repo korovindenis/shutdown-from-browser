@@ -4,18 +4,6 @@ import Countdown from 'react-countdown';
 import string from 'prop-types';
 
 class MyCountdown extends React.Component {
-  //   // Uninitialized state will cause Child to error out
-  //   const [whenAutoPowerOff, setItems] = useState();
-
-  //   // Data does't start loading
-  //   // until *after* Parent is mounted
-  //   useEffect(() => {
-  //     fetch('/api/v1/get-time-autopoweroff/')
-  //       .then(res => res.json())
-  //       .then(data => setItems(data));
-  //   }, []);
-
-  // console.log(whenAutoPowerOff);
   render() {
 
     const renderer = ({ hours, minutes, seconds, completed }) => {
@@ -27,17 +15,14 @@ class MyCountdown extends React.Component {
     };
 
     const dateNow = new Date()
-    const time = dateNow.setTime(dateNow.getTime() + props.hours * 60 * 60 * 1000);
+    const time = dateNow.setTime(dateNow.getTime() + this.props.hours * 60 * 60 * 1000);
     
     return <Countdown date={time} renderer={renderer} />
   }
 }
 
 MyCountdown.propTypes = {
-  hours: string,
-  minutes: string,
-  seconds: string,
-  completed: Boolean,
+  hours: string
 };
 
 export default MyCountdown;

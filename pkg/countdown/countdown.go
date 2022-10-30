@@ -33,13 +33,13 @@ func New(s *Server) {
 			log.Println("Run:", viper.GetString(s.Mode))
 		}
 
-		log.Printf("Time for %s - Days: %d Hours: %d Minutes: %d Seconds: %d\n", s.Mode, timeRemaining.d, timeRemaining.h, timeRemaining.m, timeRemaining.s)
+		log.Printf("Time for %s - %d:%d:%d\n", s.Mode, timeRemaining.h, timeRemaining.m, timeRemaining.s)
 	}
 
 }
 
 func getTimeRemaining(t time.Time) countdown {
-	currentTime := time.Now()
+	currentTime := time.Now().UTC()
 	difference := t.Sub(currentTime)
 
 	total := int(difference.Seconds())

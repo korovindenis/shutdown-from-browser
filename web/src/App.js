@@ -1,6 +1,7 @@
-import React, { Component,useState,useEffect }  from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import homer from './homer.webp';
 import './App.css';
+import HandleClick from './components/HandleClick';
 import MyButton from './components/MyButton';
 import MyCountdown from './components/MyCountdown';
 import { makeStyles } from '@material-ui/core/styles';
@@ -32,27 +33,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App() {
-  const compareTime = (dt) => {
-    const res = new Date(new Date(dt)-new Date()).getHours() || 0
-    return res;
-  }
-  const [whenAutoPowerOff, setItems] = useState();
-  useEffect(() => {
-    fetch('/api/v1/get-time-autopoweroff/')
-      .then(res => res.json())
-      .then(data => setItems(data));
-  }, []);
-
-  const [autoPowerOff, setautoPowerOff] = useState("is disable");
-  const sliderChangeValue = (event, value) => {
-    const _myCountdown = <MyCountdown hours={value}/>
-    if (value > 0){
-      setautoPowerOff(_myCountdown)
-    } else {
-      setautoPowerOff("is disable")
-    }
-  };
-
   const classes = useStyles();
   const buttons = [
     {
@@ -65,18 +45,42 @@ function App() {
     }
   ]
 
+  const compareTime = (dt) => {
+    const res = Math.abs(new Date(dt) - new Date(new Date().toUTCString())) / 36e5 || 0
+    return res;
+  }
+  const [whenAutoPowerOff, setItems] = useState();
+  useEffect(() => {
+    fetch('/api/v1/get-time-autopoweroff/')
+      .then(res => res.json())
+      .then(data => {setItems(data);sliderChangeValue(null,compareTime(data.time))});
+  }, []);
+
+  const [autoPowerOff, setautoPowerOff] = useState("is disabled");
+  const sliderChangeValue = (event, value) => {
+    HandleClick("shutdown", new Date(new Date().getTime() + value * 60 * 60 * 1000).toISOString())
+
+    const _myCountdown = <MyCountdown hours={value} />
+    if (value > 0) {
+      setautoPowerOff(_myCountdown)
+    } else {
+      setautoPowerOff("is disable")
+    }
+  };
+
   return (
     <div className="App">
       <div className="App-main">
         <img src={homer} className="App-logo" alt="logo" />
         <div>
           {buttons.map(button => (
-            <MyButton key={button.text} text={button.text} css={button.css}/>
+            <MyButton key={button.text} text={button.text} css={button.css} />
           ))}
           <div className={classes.autoPowerOff}>
-            {!whenAutoPowerOff ? <p>Loading...</p> : 
+            {!whenAutoPowerOff ? <p>Loading...</p> :
               <div>
                 <Typography className={classes.leftText}>
+                  {/* Auto-PowerOff {cTime > 0 ? <MyCountdown hours={cTime} /> : autoPowerOff} */}
                   Auto-PowerOff {autoPowerOff}
                 </Typography>
                 <Slider
@@ -90,9 +94,9 @@ function App() {
                   max={24}
                 />
               </div>
-              }
-            </div>
+            }
           </div>
+        </div>
         <MDBFooter bgColor='light' className='text-center text-lg-start text-muted App-footer'>
           <div className='text-center p-3'>
             <a className='text-white' target="_blank" rel="noopener noreferrer" href='https://github.com/korovindenis/shutdown-from-browser'>
