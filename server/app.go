@@ -121,7 +121,7 @@ func (s *Sfb) Run(port string) error {
 func powerHandler(w http.ResponseWriter, r *http.Request) {
 	var tmpServer countdown.Server
 	// validate input
-	if err := json.NewDecoder(r.Body).Decode(&tmpServer); (err != nil) || (tmpServer.Mode != "shutdown" && tmpServer.Mode != "reboot") {
+	if err := json.NewDecoder(r.Body).Decode(&tmpServer); (err != nil) || (tmpServer.Mode != "" && tmpServer.Mode != "shutdown" && tmpServer.Mode != "reboot") {
 		log.Printf("Error validate server Mode : %s", err)
 
 		w.WriteHeader(http.StatusBadRequest)
@@ -134,9 +134,15 @@ func powerHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	myServer = tmpServer
-	log.Println("Received:", myServer)
-
+	// reinitialize gorutine
+	if myServer.Mode == "" {
+		go countdown.New(&myServer)
+	}
+	// if resived too many requests
+	if tmpServer.TimeShutDown == myServer.TimeShutDown {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
 	// send response
 	jsonResp, err := json.Marshal(map[string]string{"message": "Server is " + myServer.Mode + " on the " + myServer.TimeShutDown})
 	if err != nil {
@@ -145,6 +151,8 @@ func powerHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	myServer = tmpServer
+	log.Println("Received:", myServer)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")

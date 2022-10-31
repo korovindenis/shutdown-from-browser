@@ -14,7 +14,6 @@ type Server struct {
 
 type countdown struct {
 	t int
-	d int
 	h int
 	m int
 	s int
@@ -25,6 +24,9 @@ func New(s *Server) {
 		time.Sleep(time.Second * 5)
 	}
 	for range time.Tick(1 * time.Second) {
+		if s.Mode == "" {
+			break
+		}
 		v, _ := time.Parse(time.RFC3339, s.TimeShutDown)
 		timeRemaining := getTimeRemaining(v)
 
@@ -43,14 +45,12 @@ func getTimeRemaining(t time.Time) countdown {
 	difference := t.Sub(currentTime)
 
 	total := int(difference.Seconds())
-	days := int(total / (60 * 60 * 24))
 	hours := int(total / (60 * 60) % 24)
 	minutes := int(total/60) % 60
 	seconds := int(total % 60)
 
 	return countdown{
 		t: total,
-		d: days,
 		h: hours,
 		m: minutes,
 		s: seconds,

@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App() {
+  const timeFormatted = (t) => { return t}
   const classes = useStyles();
   const buttons = [
     {
@@ -57,8 +58,8 @@ function App() {
   }, []);
 
   const [autoPowerOff, setautoPowerOff] = useState("is disabled");
-  const sliderChangeValue = (event, value) => {
-    HandleClick("shutdown", new Date(new Date().getTime() + value * 60 * 60 * 1000).toISOString())
+  const sliderChangeValue = (e, value) => {
+    HandleClick(value == 0 ? "" : "shutdown", new Date(new Date().getTime() + value * 60 * 60 * 1000).toISOString().replace(/:[0-9]{2}\.[0-9]{3}Z/,":00.000Z"))
 
     const _myCountdown = <MyCountdown hours={value} />
     if (value > 0) {
