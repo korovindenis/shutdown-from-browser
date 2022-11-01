@@ -134,10 +134,6 @@ func powerHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	// reinitialize gorutine
-	if myServer.Mode == "" {
-		go countdown.New(&myServer)
-	}
 	// if resived too many requests
 	if tmpServer.TimeShutDown == myServer.TimeShutDown {
 		w.WriteHeader(http.StatusNoContent)
@@ -152,7 +148,7 @@ func powerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	myServer = tmpServer
-	log.Println("Received:", myServer)
+	log.Printf("Received: %+v", myServer)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -163,7 +159,11 @@ func powerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getTimePOHandler(w http.ResponseWriter, r *http.Request) {
-	jsonResp, err := json.Marshal(map[string]string{"time": myServer.TimeShutDown})
+	var res countdown.Server
+	if myServer.Mode != "" {
+		res = myServer
+	}
+	jsonResp, err := json.Marshal(res)
 	if err != nil {
 		log.Printf("Error JSON Marshal : %s", err)
 

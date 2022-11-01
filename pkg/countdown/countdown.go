@@ -20,24 +20,23 @@ type countdown struct {
 }
 
 func New(s *Server) {
-	for s.Mode == "" {
-		time.Sleep(time.Second * 5)
-	}
-	for range time.Tick(1 * time.Second) {
+	for {
 		if s.Mode == "" {
-			break
-		}
-		v, _ := time.Parse(time.RFC3339, s.TimeShutDown)
-		timeRemaining := getTimeRemaining(v)
+			time.Sleep(time.Second * 5)
+		} else {
+			time.Sleep(1 * time.Second)
+			v, _ := time.Parse(time.RFC3339, s.TimeShutDown)
+			timeRemaining := getTimeRemaining(v)
 
-		if timeRemaining.t <= 0 {
-			// bye
-			log.Println("Run:", viper.GetString(s.Mode))
+			if s.Mode != "" {
+				if timeRemaining.t <= 0 {
+					// bye
+					log.Println("Run:", viper.GetString(s.Mode))
+				}
+				log.Printf("Time for %s - %d:%d:%d\n", s.Mode, timeRemaining.h, timeRemaining.m, timeRemaining.s)
+			}
 		}
-
-		log.Printf("Time for %s - %d:%d:%d\n", s.Mode, timeRemaining.h, timeRemaining.m, timeRemaining.s)
 	}
-
 }
 
 func getTimeRemaining(t time.Time) countdown {

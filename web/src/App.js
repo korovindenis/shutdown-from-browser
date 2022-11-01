@@ -33,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App() {
-  const timeFormatted = (t) => { return t}
   const classes = useStyles();
   const buttons = [
     {
@@ -54,12 +53,12 @@ function App() {
   useEffect(() => {
     fetch('/api/v1/get-time-autopoweroff/')
       .then(res => res.json())
-      .then(data => {setItems(data);sliderChangeValue(null,compareTime(data.time))});
+      .then(data => { setItems(data); sliderChangeValue(null, data.TimeShutDown == "" ? 0 : compareTime(data.TimeShutDown)) });
   }, []);
 
   const [autoPowerOff, setautoPowerOff] = useState("is disabled");
   const sliderChangeValue = (e, value) => {
-    HandleClick(value == 0 ? "" : "shutdown", new Date(new Date().getTime() + value * 60 * 60 * 1000).toISOString().replace(/:[0-9]{2}\.[0-9]{3}Z/,":00.000Z"))
+    HandleClick(value == 0 ? "" : "shutdown", new Date(new Date().getTime() + value * 60 * 60 * 1000).toISOString().replace(/:[0-9]{2}\.[0-9]{3}Z/, ":00.000Z"))
 
     const _myCountdown = <MyCountdown hours={value} />
     if (value > 0) {
@@ -85,7 +84,7 @@ function App() {
                   Auto-PowerOff {autoPowerOff}
                 </Typography>
                 <Slider
-                  defaultValue={compareTime(whenAutoPowerOff.time)}
+                  defaultValue={compareTime(whenAutoPowerOff.TimeShutDown)}
                   aria-labelledby="discrete-slider"
                   valueLabelDisplay="auto"
                   onChange={sliderChangeValue}
