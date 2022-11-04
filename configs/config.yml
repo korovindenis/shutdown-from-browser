@@ -1,4 +1,4 @@
-port: 8001
+port: 8000
 
 # Syscall commands
 shutdown: "LINUX_REBOOT_CMD_POWER_OFF"

@@ -1,0 +1,94 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Linux service for shutdown PC from the browser (Go, React)",
+        "title": "Shutdown from browser",
+        "contact": {
+            "name": "korovindenis",
+            "url": "https://github.com/korovindenis"
+        },
+        "version": "0.1"
+    },
+    "host": "localhost:8000",
+    "basePath": "/api/v1",
+    "paths": {
+        "/get-time-autopoweroff/": {
+            "get": {
+                "description": "get the auto power off time",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Get time"
+                ],
+                "summary": "GetTimePOHandler",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Server"
+                        }
+                    }
+                }
+            }
+        },
+        "/server-power/": {
+            "post": {
+                "description": "set time for reboot or shutdown",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reboot or shutdown"
+                ],
+                "summary": "PowerHandler",
+                "parameters": [
+                    {
+                        "description": "requared",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Server"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PoResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.PoResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Server": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string"
+                },
+                "timeShutDown": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

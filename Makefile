@@ -13,6 +13,10 @@ build-app:
 	@go mod download && CGO_ENABLED=0 GOOS=$(OS) go build -ldflags "-w" -a -o $(APP_BUILD_NAME) $(PATH_MAIN_GO)
 	@rice append -i ./server/ --exec $(APP_BUILD_NAME)
 
+build-swagger:
+	@echo "  >  Building api"
+	@swag init  -g .\cmd\sfb\main.go --parseDependency -o api
+
 get:
 	@echo "  >  Checking dependencies"
 	@go install $(PATH_MAIN_GO)

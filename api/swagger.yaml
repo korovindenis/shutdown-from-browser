@@ -1,0 +1,61 @@
+basePath: /api/v1
+definitions:
+  models.PoResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  models.Server:
+    properties:
+      mode:
+        type: string
+      timeShutDown:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact:
+    name: korovindenis
+    url: https://github.com/korovindenis
+  description: Linux service for shutdown PC from the browser (Go, React)
+  title: Shutdown from browser
+  version: "0.1"
+paths:
+  /get-time-autopoweroff/:
+    get:
+      consumes:
+      - application/json
+      description: get the auto power off time
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Server'
+      summary: GetTimePOHandler
+      tags:
+      - Get time
+  /server-power/:
+    post:
+      consumes:
+      - application/json
+      description: set time for reboot or shutdown
+      parameters:
+      - description: requared
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Server'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PoResponse'
+      summary: PowerHandler
+      tags:
+      - Reboot or shutdown
+swagger: "2.0"

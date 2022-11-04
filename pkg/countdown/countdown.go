@@ -4,13 +4,9 @@ import (
 	"log"
 	"time"
 
+	"github.com/korovindenis/shutdown-from-browser/models"
 	"github.com/spf13/viper"
 )
-
-type Server struct {
-	Mode         string
-	TimeShutDown string
-}
 
 type countdown struct {
 	t int
@@ -19,7 +15,7 @@ type countdown struct {
 	s int
 }
 
-func New(s *Server) {
+func New(s *models.Server) {
 	for {
 		if s.Mode == "" {
 			time.Sleep(time.Second * 5)
