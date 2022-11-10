@@ -17,6 +17,9 @@ build-swagger:
 	@echo "  >  Building api"
 	@swag init  -g .\cmd\sfb\main.go --parseDependency -o api
 
+tests:
+	go test ./...
+	
 get:
 	@echo "  >  Checking dependencies"
 	@go install $(PATH_MAIN_GO)

@@ -15,7 +15,7 @@ type countdown struct {
 	s int
 }
 
-func New(s *models.Server) {
+func New(s *models.ServerStatus) {
 	for {
 		if s.Mode == "" {
 			time.Sleep(time.Second * 5)
@@ -28,6 +28,7 @@ func New(s *models.Server) {
 				if timeRemaining.t <= 0 {
 					// bye
 					log.Println("Run:", viper.GetString(s.Mode))
+					//syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
 				}
 				log.Printf("Time for %s - %d:%d:%d\n", s.Mode, timeRemaining.h, timeRemaining.m, timeRemaining.s)
 			}

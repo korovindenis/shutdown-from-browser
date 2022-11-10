@@ -5,7 +5,7 @@ definitions:
       message:
         type: string
     type: object
-  models.Server:
+  models.ServerStatus:
     properties:
       mode:
         type: string
@@ -32,7 +32,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Server'
+            $ref: '#/definitions/models.ServerStatus'
       summary: GetTimePOHandler
       tags:
       - Get time
@@ -42,12 +42,12 @@ paths:
       - application/json
       description: set time for reboot or shutdown
       parameters:
-      - description: requared
+      - description: format time is RFC3339
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.Server'
+          $ref: '#/definitions/models.ServerStatus'
       produces:
       - application/json
       responses:

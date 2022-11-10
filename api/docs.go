@@ -36,7 +36,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Server"
+                            "$ref": "#/definitions/models.ServerStatus"
                         }
                     }
                 }
@@ -57,12 +57,12 @@ const docTemplate = `{
                 "summary": "PowerHandler",
                 "parameters": [
                     {
-                        "description": "requared",
+                        "description": "format time is RFC3339",
                         "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Server"
+                            "$ref": "#/definitions/models.ServerStatus"
                         }
                     }
                 ],
@@ -86,7 +86,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Server": {
+        "models.ServerStatus": {
             "type": "object",
             "properties": {
                 "mode": {

@@ -8,7 +8,7 @@ class MyButton extends React.Component {
     return <Button
       variant="contained"
       className={this.props.css}
-      onClick={e => HandleClick(this.props.text)}
+      onClick={e => HandleClick(this.props.text, new Date(new Date().getTime()).toISOString().replace(/:[0-9]{2}\.[0-9]{3}Z/, ":00.000Z"))}
     >
       {this.props.text.toUpperCase()}
     </Button>;

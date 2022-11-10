@@ -1,6 +1,6 @@
 package models
 
-type Server struct {
+type ServerStatus struct {
 	Mode         string
 	TimeShutDown string
 }
