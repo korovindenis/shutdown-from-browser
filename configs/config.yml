@@ -1,5 +1,5 @@
+# App address is localhost:%port%
 port: 8000
 
-# Syscall commands
-shutdown: "LINUX_REBOOT_CMD_POWER_OFF"
-reboot: "LINUX_REBOOT_CMD_RESTART"
+# Logs level (0,1,2)
+logslevel: 1

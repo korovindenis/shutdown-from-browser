@@ -42,6 +42,9 @@ func PowerHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
+	MyServer = tmpServer
+	log.Printf("Received: %+v", MyServer)
+
 	// send response
 	jsonResp, err := json.Marshal(models.PoResponse{Message: "Server is " + MyServer.Mode + " on the " + MyServer.TimeShutDown})
 	if err != nil {
@@ -50,8 +53,6 @@ func PowerHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	MyServer = tmpServer
-	log.Printf("Received: %+v", MyServer)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")

@@ -2,10 +2,10 @@ package countdown
 
 import (
 	"log"
+	"syscall"
 	"time"
 
 	"github.com/korovindenis/shutdown-from-browser/models"
-	"github.com/spf13/viper"
 )
 
 type countdown struct {
@@ -15,7 +15,7 @@ type countdown struct {
 	s int
 }
 
-func New(s *models.ServerStatus) {
+func New(s *models.ServerStatus, logslevel uint) {
 	for {
 		if s.Mode == "" {
 			time.Sleep(time.Second * 5)
@@ -27,10 +27,17 @@ func New(s *models.ServerStatus) {
 			if s.Mode != "" {
 				if timeRemaining.t <= 0 {
 					// bye
-					log.Println("Run:", viper.GetString(s.Mode))
-					//syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
+					if logslevel > 0 {
+						log.Println("Run:", s.Mode)
+					}
+					if s.Mode == "reboot" {
+						syscall.Reboot(syscall.LINUX_REBOOT_CMD_RESTART)
+					} else {
+						syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
+					}
+				} else if logslevel > 1 {
+					log.Printf("Time for %s - %d:%d:%d\n", s.Mode, timeRemaining.h, timeRemaining.m, timeRemaining.s)
 				}
-				log.Printf("Time for %s - %d:%d:%d\n", s.Mode, timeRemaining.h, timeRemaining.m, timeRemaining.s)
 			}
 		}
 	}

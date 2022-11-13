@@ -28,7 +28,7 @@ func (s *Sfb) FindBox() (res bool, err error) {
 	return true, nil
 }
 
-func (s *Sfb) Run(port string) error {
+func (s *Sfb) Run(port string, logslevel uint) error {
 	s.HttpServer = &http.Server{
 		Addr:           ":" + port,
 		ReadTimeout:    10 * time.Second,
@@ -37,7 +37,9 @@ func (s *Sfb) Run(port string) error {
 	}
 
 	go func() {
-		log.Println("Server starting at port", port)
+		if logslevel > 0 {
+			log.Println("Server starting at port", port)
+		}
 
 		if err := s.HttpServer.ListenAndServe(); err != nil {
 			log.Fatalf("Failed to listen and serve: %+v", err)
@@ -55,9 +57,11 @@ func (s *Sfb) Run(port string) error {
 	return s.HttpServer.Shutdown(ctx)
 }
 
-func NewSfb() *Sfb {
+func NewSfb(logslevel uint) (*Sfb, error) {
 	newApp := Sfb{}
-	newApp.FindBox()
+	if _, err := newApp.FindBox(); err != nil {
+		return nil, err
+	}
 
 	// Define endpoint
 	http.HandleFunc("/", serveAppHandler(newApp.WebFolder))
@@ -67,9 +71,9 @@ func NewSfb() *Sfb {
 	http.Handle("/static/", http.FileServer(newApp.WebFolder.HTTPBox()))
 	// Swagger
 	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
-	go countdown.New(&handler.MyServer)
+	go countdown.New(&handler.MyServer, logslevel)
 
-	return &newApp
+	return &newApp, nil
 }
 
 func serveAppHandler(app *rice.Box) http.HandlerFunc {

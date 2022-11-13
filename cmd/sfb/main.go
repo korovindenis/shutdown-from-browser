@@ -21,10 +21,14 @@ func main() {
 	if err := config.Init(); err != nil {
 		log.Fatalf("%s", err.Error())
 	}
+	port := viper.GetString("port")
+	logslevel := viper.GetUint("logslevel")
 
-	sfb := server.NewSfb()
-
-	if err := sfb.Run(viper.GetString("port")); err != nil {
+	sfb, err := server.NewSfb(logslevel)
+	if err != nil {
+		log.Fatalf("%s", err.Error())
+	}
+	if err := sfb.Run(port, logslevel); err != nil {
 		log.Fatalf("%s", err.Error())
 	}
 }
