@@ -30,10 +30,13 @@ func New(s *models.ServerStatus, logslevel uint) {
 					if logslevel > 0 {
 						log.Println("Run:", s.Mode)
 					}
+					callMode := syscall.LINUX_REBOOT_CMD_POWER_OFF
 					if s.Mode == "reboot" {
-						syscall.Reboot(syscall.LINUX_REBOOT_CMD_RESTART)
-					} else {
-						syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
+						callMode = syscall.LINUX_REBOOT_CMD_RESTART
+					}
+					err := syscall.Reboot(callMode)
+					if err != nil {
+						log.Fatalf("%s", err)
 					}
 				} else if logslevel > 1 {
 					log.Printf("Time for %s - %d:%d:%d\n", s.Mode, timeRemaining.h, timeRemaining.m, timeRemaining.s)
