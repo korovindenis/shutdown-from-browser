@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -61,8 +62,10 @@ func TestPowerHandler(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			json.NewEncoder(buf).Encode(test.input)
-
+			err := json.NewEncoder(buf).Encode(test.input)
+			if err != nil {
+				log.Fatalf("%s", err)
+			}
 			rw := httptest.NewRecorder()
 			req := httptest.NewRequest(http.MethodPost, "/api/v1/server-power/", buf)
 
