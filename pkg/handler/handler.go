@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/korovindenis/shutdown-from-browser/models"
+	models "github.com/korovindenis/shutdown-from-browser/v1/models"
 )
 
 var MyServer models.ServerStatus

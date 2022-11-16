@@ -1,4 +1,4 @@
-module github.com/korovindenis/shutdown-from-browser
+module github.com/korovindenis/shutdown-from-browser/v1
 
 go 1.18
 

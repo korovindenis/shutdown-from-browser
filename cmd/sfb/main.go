@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	config "github.com/korovindenis/shutdown-from-browser/configs"
-	"github.com/korovindenis/shutdown-from-browser/server"
+	config "github.com/korovindenis/shutdown-from-browser/v1/configs"
+	server "github.com/korovindenis/shutdown-from-browser/v1/server"
 	"github.com/spf13/viper"
 )
 

@@ -5,7 +5,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/korovindenis/shutdown-from-browser/models"
+	models "github.com/korovindenis/shutdown-from-browser/v1/models"
 )
 
 type countdown struct {

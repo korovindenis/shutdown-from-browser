@@ -9,9 +9,9 @@ import (
 	"time"
 
 	rice "github.com/GeertJohan/go.rice"
-	_ "github.com/korovindenis/shutdown-from-browser/api"
-	"github.com/korovindenis/shutdown-from-browser/pkg/countdown"
-	"github.com/korovindenis/shutdown-from-browser/pkg/handler"
+	_ "github.com/korovindenis/shutdown-from-browser/v1/api"
+	"github.com/korovindenis/shutdown-from-browser/v1/pkg/countdown"
+	"github.com/korovindenis/shutdown-from-browser/v1/pkg/handler"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
