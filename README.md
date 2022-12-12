@@ -4,6 +4,7 @@
 
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/korovindenis/shutdown-from-browser)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/korovindenis/shutdown-from-browser)
+![GitHub](https://img.shields.io/github/license/korovindenis/shutdown-from-browser)
 
 The service for linux allowing you to manage the power of the system (server or PC) from the web browser or through the rest requests to api
 
