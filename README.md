@@ -1,3 +1,7 @@
+<p align="center">
+  <img height="450px" alt="Shows an illustrated sun in light mode and a moon with stars in dark mode." src="https://github.com/korovindenis/shutdown-from-browser/raw/master/.github/img/homer.png">
+</p>
+
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/korovindenis/shutdown-from-browser)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/korovindenis/shutdown-from-browser)
 
