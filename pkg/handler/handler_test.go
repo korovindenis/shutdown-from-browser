@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/korovindenis/shutdown-from-browser/models"
+	"github.com/korovindenis/shutdown-from-browser/v1/models"
 	"github.com/stretchr/testify/assert"
 )
 
