@@ -1,9 +1,7 @@
 package config
 
 import (
-	"log"
 	"os"
-
 	"github.com/spf13/viper"
 )
 
