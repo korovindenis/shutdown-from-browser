@@ -15,7 +15,7 @@ func Init() error {
 	} else if _, err := os.Stat(homePath + "/sfb_configs"); !os.IsNotExist(err) {
 		viper.AddConfigPath(homePath + "/sfb_configs")
 	} else {
-		log.Fatalf("Configs folder not found")
+		return errors.New("Configs folder not found")
 	}
 	viper.SetConfigName("config")
 
