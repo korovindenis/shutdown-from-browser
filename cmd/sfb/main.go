@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-
+	"os"
 	config "github.com/korovindenis/shutdown-from-browser/v1/configs"
 	server "github.com/korovindenis/shutdown-from-browser/v1/server"
 	"github.com/spf13/viper"
@@ -19,16 +19,20 @@ import (
 // @contact.url    https://github.com/korovindenis
 func main() {
 	if err := config.Init(); err != nil {
-		log.Fatalf("%s", err.Error())
+		log.Printf("%s", err.Error())
+		os.Exit(1)
 	}
 	port := viper.GetString("port")
 	logslevel := viper.GetUint("logslevel")
 
 	sfb, err := server.NewSfb(logslevel)
 	if err != nil {
-		log.Fatalf("%s", err.Error())
+		log.Printf("%s", err.Error())
+		os.Exit(1)
 	}
 	if err := sfb.Run(port, logslevel); err != nil {
-		log.Fatalf("%s", err.Error())
+		log.Printf("%s", err.Error())
+		os.Exit(1)
 	}
+	os.Exit(0)
 }
