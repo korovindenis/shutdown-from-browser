@@ -3,8 +3,9 @@ package main
 import (
 	"log"
 	"os"
+
 	config "github.com/korovindenis/shutdown-from-browser/v1/configs"
-	server "github.com/korovindenis/shutdown-from-browser/v1/server"
+	transport "github.com/korovindenis/shutdown-from-browser/v1/internal/transport"
 	"github.com/spf13/viper"
 )
 
@@ -25,7 +26,7 @@ func main() {
 	port := viper.GetString("port")
 	logslevel := viper.GetUint("logslevel")
 
-	sfb, err := server.NewSfb(logslevel)
+	sfb, err := transport.NewSfb(logslevel)
 	if err != nil {
 		log.Printf("%s", err.Error())
 		os.Exit(1)

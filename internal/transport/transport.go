@@ -1,4 +1,4 @@
-package server
+package transport
 
 import (
 	"context"
@@ -10,8 +10,8 @@ import (
 
 	rice "github.com/GeertJohan/go.rice"
 	_ "github.com/korovindenis/shutdown-from-browser/v1/api"
-	"github.com/korovindenis/shutdown-from-browser/v1/pkg/countdown"
-	"github.com/korovindenis/shutdown-from-browser/v1/pkg/handler"
+	"github.com/korovindenis/shutdown-from-browser/v1/internal/service"
+	"github.com/korovindenis/shutdown-from-browser/v1/internal/transport/rest/handler"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -22,7 +22,7 @@ type Sfb struct {
 
 // Define the rice box with the frontend static files
 func (s *Sfb) FindBox() (res bool, err error) {
-	if s.WebFolder, err = rice.FindBox("../web/build"); err != nil {
+	if s.WebFolder, err = rice.FindBox("../../web/build"); err != nil {
 		return res, err
 	}
 	return true, nil
@@ -71,7 +71,7 @@ func NewSfb(logslevel uint) (*Sfb, error) {
 	http.Handle("/static/", http.FileServer(newApp.WebFolder.HTTPBox()))
 	// Swagger
 	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
-	go countdown.New(&handler.MyServer, logslevel)
+	go service.New(&handler.MyServer, logslevel)
 
 	return &newApp, nil
 }

@@ -6,10 +6,14 @@ import (
 	"net/http"
 	"time"
 
-	models "github.com/korovindenis/shutdown-from-browser/v1/models"
+	"github.com/korovindenis/shutdown-from-browser/v1/internal/service"
 )
 
-var MyServer models.ServerStatus
+var MyServer service.Status
+
+type poResponse struct {
+	Message string
+}
 
 // PowerHandler
 // @Summary      PowerHandler
@@ -17,11 +21,11 @@ var MyServer models.ServerStatus
 // @Tags         Reboot or shutdown
 // @Accept       json
 // @Produce      json
-// @Param		 input body models.ServerStatus true "format time is RFC3339"
-// @Success      200  {object}  models.PoResponse
+// @Param		 input body service.Status true "format time is RFC3339"
+// @Success      200  {object}  poResponse
 // @Router       /server-power/ [post]
 func PowerHandler(w http.ResponseWriter, r *http.Request) {
-	var tmpServer models.ServerStatus
+	var tmpServer service.Status
 	// validate input
 	if err := json.NewDecoder(r.Body).Decode(&tmpServer); (err != nil) || (tmpServer.Mode != "" && tmpServer.Mode != "shutdown" && tmpServer.Mode != "reboot") {
 		log.Printf("Error validate server Mode : %s", err)
@@ -46,7 +50,7 @@ func PowerHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received: %+v", MyServer)
 
 	// send response
-	jsonResp, err := json.Marshal(models.PoResponse{Message: "Server is " + MyServer.Mode + " on the " + MyServer.TimeShutDown})
+	jsonResp, err := json.Marshal(poResponse{Message: "Server is " + MyServer.Mode + " on the " + MyServer.TimeShutDown})
 	if err != nil {
 		log.Printf("Error JSON Marshal : %s", err)
 
@@ -68,10 +72,10 @@ func PowerHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags         Get time
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  models.ServerStatus
+// @Success      200  {object}  service.Status
 // @Router       /get-time-autopoweroff/ [get]
 func GetTimePOHandler(w http.ResponseWriter, r *http.Request) {
-	var res models.ServerStatus
+	var res service.Status
 	if MyServer.Mode != "" {
 		res = MyServer
 	}

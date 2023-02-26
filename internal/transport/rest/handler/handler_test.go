@@ -10,13 +10,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/korovindenis/shutdown-from-browser/v1/models"
+	"github.com/korovindenis/shutdown-from-browser/v1/internal/service"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetTimePOHandler(t *testing.T) {
 	// Arrange
-	json, _ := json.Marshal(models.ServerStatus{})
+	json, _ := json.Marshal(service.Status{})
 	expected := string(json)
 
 	rw := httptest.NewRecorder()
@@ -34,27 +34,27 @@ func TestPowerHandler(t *testing.T) {
 	// Arrange
 	tests := []struct {
 		name         string
-		input        models.ServerStatus
+		input        service.Status
 		expectedCode int
 	}{
 		{
 			name:         "Check Http Code",
-			input:        models.ServerStatus{},
+			input:        service.Status{},
 			expectedCode: http.StatusBadRequest,
 		},
 		{
 			name:         "Check Bad Mode",
-			input:        models.ServerStatus{Mode: "bad mode", TimeShutDown: time.Now().Format(time.RFC3339)},
+			input:        service.Status{Mode: "bad mode", TimeShutDown: time.Now().Format(time.RFC3339)},
 			expectedCode: http.StatusBadRequest,
 		},
 		{
 			name:         "Check Bad Time",
-			input:        models.ServerStatus{Mode: "shutdown", TimeShutDown: time.Now().AddDate(1, 0, 0).Format(time.RFC3339)},
+			input:        service.Status{Mode: "shutdown", TimeShutDown: time.Now().AddDate(1, 0, 0).Format(time.RFC3339)},
 			expectedCode: http.StatusBadRequest,
 		},
 		{
 			name:         "Check Positive Case",
-			input:        models.ServerStatus{Mode: "shutdown", TimeShutDown: time.Now().Format(time.RFC3339)},
+			input:        service.Status{Mode: "shutdown", TimeShutDown: time.Now().Format(time.RFC3339)},
 			expectedCode: http.StatusOK,
 		},
 	}

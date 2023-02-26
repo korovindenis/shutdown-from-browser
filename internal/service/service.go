@@ -1,12 +1,15 @@
-package countdown
+package service
 
 import (
 	"log"
 	"syscall"
 	"time"
-
-	models "github.com/korovindenis/shutdown-from-browser/v1/models"
 )
+
+type Status struct {
+	Mode         string
+	TimeShutDown string
+}
 
 type countdown struct {
 	t int
@@ -15,7 +18,7 @@ type countdown struct {
 	s int
 }
 
-func New(s *models.ServerStatus, logslevel uint) {
+func New(s *Status, logslevel uint) {
 	for {
 		if s.Mode == "" {
 			time.Sleep(time.Second * 5)

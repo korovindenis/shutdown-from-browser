@@ -7,12 +7,13 @@ build: clean get build-web build-app
 
 build-web:
 	@echo "  >  Building web-components"
-	@cd ./web && npm run build
+	@cd ./web && npm install && npm run build
 	
 build-app:
 	@echo "  >  Building go app"
 	@go mod download && CGO_ENABLED=0 GOOS=$(OS) go build -ldflags "-w" -a -o $(APP_BUILD_NAME) $(PATH_MAIN_GO)
-	@rice append -i ./server/ --exec $(APP_BUILD_NAME)
+	@sudo apt install golang-rice
+	@rice append -i ./internal/transport/ --exec $(APP_BUILD_NAME)
 
 build-swagger:
 	@echo "  >  Building api"

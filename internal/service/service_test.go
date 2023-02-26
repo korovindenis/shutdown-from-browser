@@ -1,4 +1,4 @@
-package countdown
+package service
 
 import (
 	"fmt"
