@@ -1,9 +1,11 @@
+.PHONY: all
+
 APP_BUILD_NAME = SFB
 PATH_MAIN_GO = ./cmd/sfb/main.go
 OS = linux
 SYSD_FILE = /etc/systemd/system/sfb.service
 
-build: clean get build-web build-app
+all: clean get tests build-web build-app
 
 build-web:
 	@echo "  >  Building web-components"
@@ -11,8 +13,7 @@ build-web:
 	
 build-app:
 	@echo "  >  Building go app"
-	@go mod download && CGO_ENABLED=0 GOOS=$(OS) go build -ldflags "-w" -a -o $(APP_BUILD_NAME) $(PATH_MAIN_GO)
-	@sudo apt install golang-rice
+	@CGO_ENABLED=0 GOOS=$(OS) go build -ldflags "-w" -a -o $(APP_BUILD_NAME) $(PATH_MAIN_GO)
 	@rice append -i ./internal/transport/ --exec $(APP_BUILD_NAME)
 
 build-swagger:
@@ -24,7 +25,9 @@ tests:
 	
 get:
 	@echo "  >  Checking dependencies"
+	@go mod download
 	@go install $(PATH_MAIN_GO)
+	@sudo apt install golang-rice
 
 clean:
 	@echo "  >  Сlearing folder"
