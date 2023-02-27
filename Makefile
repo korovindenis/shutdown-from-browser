@@ -5,7 +5,7 @@ PATH_MAIN_GO = ./cmd/sfb/main.go
 OS = linux
 SYSD_FILE = /etc/systemd/system/sfb.service
 
-all: clean get tests build-web build-app
+all: clean get gotest build-web build-app
 
 build-web:
 	@echo "  >  Building web-components"
@@ -20,8 +20,11 @@ build-swagger:
 	@echo "  >  Building api"
 	@swag init  -g .\cmd\sfb\main.go --parseDependency -o api
 
-tests:
+gotest:
 	go test ./...
+	
+gotestcover:
+	go test ./... -cover
 	
 get:
 	@echo "  >  Checking dependencies"
