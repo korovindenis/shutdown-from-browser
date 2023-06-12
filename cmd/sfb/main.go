@@ -22,10 +22,10 @@ var logslevel uint = 1
 func init() {
 	if err := config.Init(); err != nil {
 		log.Printf("%s", err.Error())
-		os.Exit(EXIT_ERROR)
+	} else {
+		port = viper.GetUint32("port")
+		logslevel = viper.GetUint("logslevel")
 	}
-	port = viper.GetUint32("port")
-	logslevel = viper.GetUint("logslevel")
 }
 
 // @title           Shutdown from browser

@@ -6,8 +6,8 @@ import (
 )
 
 type Status struct {
-	Mode         string
-	TimeShutDown string
+	Mode         string `json:"mode"`
+	TimeShutDown string `json:"timeshutdown"`
 }
 
 type countdown struct {

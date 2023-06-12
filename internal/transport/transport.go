@@ -16,8 +16,8 @@ import (
 )
 
 type Sfb struct {
-	HttpServer *http.Server
-	WebFolder  *rice.Box
+	HttpServer *http.Server `json:"httpserver"`
+	WebFolder  *rice.Box    `json:"webfolder"`
 }
 
 // Define the rice box with the frontend static files
