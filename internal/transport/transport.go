@@ -28,9 +28,9 @@ func (s *Sfb) FindBox() (res bool, err error) {
 	return true, nil
 }
 
-func (s *Sfb) Run(port string, logslevel uint) error {
+func (s *Sfb) Run(port uint32, logslevel uint) error {
 	s.HttpServer = &http.Server{
-		Addr:           ":" + port,
+		Addr:           ":" + string(port),
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
@@ -67,13 +67,29 @@ func NewSfb(logslevel uint) (*Sfb, error) {
 	http.HandleFunc("/", serveAppHandler(newApp.WebFolder))
 	http.HandleFunc("/api/v1/server-power/", handler.PowerHandler)
 	http.HandleFunc("/api/v1/get-time-autopoweroff/", handler.GetTimePOHandler)
+
 	// Server static files
 	http.Handle("/static/", http.FileServer(newApp.WebFolder.HTTPBox()))
+
 	// Swagger
 	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 	go service.New(&handler.MyServer, logslevel)
 
 	return &newApp, nil
+}
+
+func Exec(port uint32, logslevel uint) error {
+	sfb, err := NewSfb(logslevel)
+	if err != nil {
+		return err
+	}
+
+	err = sfb.Run(port, logslevel)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func serveAppHandler(app *rice.Box) http.HandlerFunc {
