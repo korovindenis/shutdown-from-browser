@@ -1,9 +1,9 @@
 // Request to backend
-export default async function HandleClick(mode, TimeShutDown) {
+export default async function HandleClick(ModePowerOff, TimePowerOff) {
   try {
     const response = await fetch('/api/v1/server-power/', {
       method: 'POST',
-      body: JSON.stringify({ mode, TimeShutDown }),
+      body: JSON.stringify({ ModePowerOff, TimePowerOff }),
       headers: {
         Accept: 'application/json',
       },

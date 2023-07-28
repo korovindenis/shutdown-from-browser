@@ -1,0 +1,9 @@
+# Logs level (0,1,2)
+logs_level: 2
+Env: dev
+http_server:
+  address: 0.0.0.0:8081
+  timeout: 4s
+  idle_timeout: 30s
+  mode: debug
+  templates_path: web/build/index.html

@@ -1,7 +1,8 @@
-package service
+package usecase
 
 import (
-	"fmt"
+	"log"
+	"os"
 )
 
 var syscall Syscall
@@ -16,7 +17,9 @@ type Syscall struct {
 }
 
 func (s Syscall) Reboot(mode byte) error {
-	fmt.Println("A ", mode, " would have occurred")
+	log.Println("A mode '", mode, "' would have occurred")
+
+	os.Exit(0)
 
 	return nil
 }

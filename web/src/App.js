@@ -53,7 +53,7 @@ function App() {
   useEffect(() => {
     fetch('/api/v1/get-time-autopoweroff/')
       .then(res => res.json())
-      .then(data => { setItems(data); sliderChangeValue(null, data.TimeShutDown == "" ? 0 : compareTime(data.TimeShutDown)) });
+      .then(data => { setItems(data); sliderChangeValue(null, data.TimePowerOff == "" ? 0 : compareTime(data.TimePowerOff)) });
   }, []);
 
   const [autoPowerOff, setautoPowerOff] = useState("is disabled");
@@ -84,7 +84,7 @@ function App() {
                   Auto-PowerOff {autoPowerOff}
                 </Typography>
                 <Slider
-                  defaultValue={compareTime(whenAutoPowerOff.TimeShutDown)}
+                  defaultValue={compareTime(whenAutoPowerOff.TimePowerOff)}
                   aria-labelledby="discrete-slider"
                   valueLabelDisplay="auto"
                   onChange={sliderChangeValue}

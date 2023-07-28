@@ -1,24 +1,24 @@
 .PHONY: all
 
-APP_BUILD_NAME = SFB
-PATH_MAIN_GO = ./cmd/sfb/main.go
-OS = linux
+APP_BUILD_NAME = sfb
+PATH_MAIN_GO = ./cmd/shutdown-from-browser/main.go
+OS_BUILD = linux
 SYSD_FILE = /etc/systemd/system/sfb.service
+
+ifeq ($(OS), Windows_NT)
+	OS_BUILD = windows
+	APP_BUILD_NAME = sfb.exe
+endif
 
 all: clean get gotest build-web build-app
 
 build-web:
 	@echo "  >  Building web-components"
-	@cd ./web && npm install && npm run build
+	@cd ./web && npm install --legacy-peer-deps && npm run build
 	
 build-app:
 	@echo "  >  Building go app"
-	@CGO_ENABLED=0 GOOS=$(OS) go build -ldflags "-w" -a -o $(APP_BUILD_NAME) $(PATH_MAIN_GO)
-	@rice append -i ./internal/transport/ --exec $(APP_BUILD_NAME)
-
-build-swagger:
-	@echo "  >  Building api"
-	@swag init  -g .\cmd\sfb\main.go --parseDependency -o api
+	@CGO_ENABLED=0 GOOS=$(OS_BUILD) go build -ldflags "-w" -a -o $(APP_BUILD_NAME) $(PATH_MAIN_GO)
 
 gotest:
 	go test ./...
@@ -30,10 +30,9 @@ get:
 	@echo "  >  Checking dependencies"
 	@go mod download
 	@go install $(PATH_MAIN_GO)
-	@sudo apt install golang-rice
 
 clean:
-	@echo "  >  Сlearing folder"
+	@echo "  >  Clearing folder"
 	@rm -f ./$(APP_BUILD_NAME)
 	@rm -rf ./web/build
 

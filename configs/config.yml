@@ -1,5 +1,0 @@
-# App address is localhost:%port%
-port: 8000
-
-# Logs level (0,1,2)
-logslevel: 1
