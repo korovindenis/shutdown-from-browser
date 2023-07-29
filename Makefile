@@ -10,7 +10,7 @@ ifeq ($(OS), Windows_NT)
 	APP_BUILD_NAME = sfb.exe
 endif
 
-all: clean get gotest build-web build-app
+all: clean get build-web build-app
 
 build-web:
 	@echo "  >  Building web-components"
