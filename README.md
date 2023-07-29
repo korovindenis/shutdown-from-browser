@@ -40,8 +40,6 @@ To build and run the **Shutdown from Browser** web server, you can use the inclu
 
 Optionally, you can install **Shutdown from Browser** as a service to ensure it runs automatically on system startup. The Makefile provides a `make install` target to do this for you.
 
-`make install` 
-
 ## Configuration
 
 The **Shutdown from Browser** web server allows you to customize its behavior by modifying the `config.yaml` file. This file contains various settings that you can adjust according to your preferences. 
