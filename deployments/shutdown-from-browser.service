@@ -1,0 +1,15 @@
+[Unit]
+Description=Go PC Info
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/apps/shutdown-from-browser
+ExecStart=/root/apps/shutdown-from-browser/sfb
+Restart=always
+RestartSec=10
+StandardOutput=inherit
+EnvironmentFile=/root/apps/shutdown-from-browser/config.env
+
+[Install]
+WantedBy=multi-user.target
