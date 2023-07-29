@@ -35,7 +35,12 @@ To build and run the **Shutdown from Browser** web server, you can use the inclu
     `make run` 
     
     The web server will be available at `http://localhost:8081/`.
-    
+
+### Install as a Service
+
+Optionally, you can install **Shutdown from Browser** as a service to ensure it runs automatically on system startup. The Makefile provides a `make install` target to do this for you.
+
+`make install` 
 
 ## Configuration
 
