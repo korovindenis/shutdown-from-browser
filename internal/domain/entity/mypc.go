@@ -3,8 +3,8 @@ package entity
 import "encoding/json"
 
 type MyPc struct {
-	ModePowerOff string
-	TimePowerOff string
+	ModePowerOff string `json:"modepoweroff"`
+	TimePowerOff string `json:"timepoweroff"`
 }
 
 func (m *MyPc) String() string {

@@ -13,7 +13,7 @@ func TestLoadConfigFileNotExists(t *testing.T) {
 	os.Setenv("CONFIG_PATH", "nonexistent.yml")
 
 	// Act
-	cfg, err := Load()
+	cfg, err := New()
 
 	// Assert
 	expectedErr := errors.New("config file does not exist: nonexistent.yml")

@@ -27,9 +27,9 @@ type HTTPServer struct {
 	TemplatesPath string        `koanf:"templates_path"`
 }
 
-func Load() (*Config, error) {
-	configPath := os.Getenv("CONFIG_PATH")
-	if configPath == "" {
+func New() (*Config, error) {
+	configPath, configExists := os.LookupEnv("CONFIG_PATH")
+	if !configExists || configPath == "" {
 		return nil, errors.New("CONFIG_PATH is not set")
 	}
 

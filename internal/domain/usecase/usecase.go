@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"fmt"
 	_ "syscall"
 	"time"
@@ -10,32 +11,25 @@ import (
 	"go.uber.org/zap"
 )
 
-//go:generate mockery --name=IComputerUsecase
-type IComputerUsecase interface {
-	SetPowerOff(pc entity.MyPc) error
-	GetTimePowerOff() (string, error)
-	GetModePowerOff() (string, error)
-	IsNeedPowerOff(logslevel uint8)
-}
-
-//go:generate mockery --name=IComputerStorage
-type IComputerStorage interface {
+//go:generate mockery --name=storage
+type storage interface {
 	SetPoff(pc entity.MyPc) error
 	GetTimePoff() (string, error)
 	GetModePoff() (string, error)
 }
 
 type ComputerUsecase struct {
-	computerStorage IComputerStorage
+	computerStorage storage
 	logger          *zap.Logger
 }
 
-func NewComputerUsecase(cStorage IComputerStorage, log *zap.Logger) IComputerUsecase {
+func New(cStorage storage, log *zap.Logger) *ComputerUsecase {
 	return &ComputerUsecase{
 		computerStorage: cStorage,
 		logger:          log,
 	}
 }
+
 func (cu *ComputerUsecase) GetTimePowerOff() (string, error) {
 	time, err := cu.computerStorage.GetTimePoff()
 	if err != nil {
@@ -44,6 +38,7 @@ func (cu *ComputerUsecase) GetTimePowerOff() (string, error) {
 
 	return time, nil
 }
+
 func (cu *ComputerUsecase) GetModePowerOff() (string, error) {
 	time, err := cu.computerStorage.GetModePoff()
 	if err != nil {
@@ -52,6 +47,7 @@ func (cu *ComputerUsecase) GetModePowerOff() (string, error) {
 
 	return time, nil
 }
+
 func (cu *ComputerUsecase) SetPowerOff(pc entity.MyPc) error {
 	if err := validator(pc); err != nil {
 		return errors.Wrap(err, "validator SetPowerOff")
@@ -63,32 +59,37 @@ func (cu *ComputerUsecase) SetPowerOff(pc entity.MyPc) error {
 	return nil
 }
 
-func (cu *ComputerUsecase) IsNeedPowerOff(logslevel uint8) {
+func (cu *ComputerUsecase) IsNeedPowerOff(ctx context.Context, logslevel uint8) {
 	for {
-		// TODO: ERR!
-		modePoff, _ := cu.GetModePowerOff()
-		timePoff, _ := cu.GetTimePowerOff()
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			// TODO: ERR!
+			modePoff, _ := cu.GetModePowerOff()
+			timePoff, _ := cu.GetTimePowerOff()
 
-		time.Sleep(5 * time.Second)
-		v, _ := time.Parse(time.RFC3339, timePoff)
-		timeRemaining := getTimeRemaining(v)
+			time.Sleep(5 * time.Second)
+			v, _ := time.Parse(time.RFC3339, timePoff)
+			timeRemaining := getTimeRemaining(v)
 
-		if modePoff != "" {
-			if timeRemaining.Total <= 0 {
-				if logslevel > 0 {
-					cu.logger.Info("Run: " + modePoff)
+			if modePoff != "" {
+				if timeRemaining.Total <= 0 {
+					if logslevel > 0 {
+						cu.logger.Info("Run: " + modePoff)
+					}
+					callMode := syscall.LINUX_REBOOT_CMD_POWER_OFF
+					if modePoff == "reboot" {
+						callMode = syscall.LINUX_REBOOT_CMD_RESTART
+					}
+					// BYE
+					if err := syscall.Reboot(callMode); err != nil {
+						panic(err)
+					}
 				}
-				callMode := syscall.LINUX_REBOOT_CMD_POWER_OFF
-				if modePoff == "reboot" {
-					callMode = syscall.LINUX_REBOOT_CMD_RESTART
+				if logslevel > 1 {
+					cu.logger.Info(fmt.Sprintf("Time for %s - %d:%d:%d\n", modePoff, timeRemaining.Hours, timeRemaining.Minutes, timeRemaining.Seconds))
 				}
-				// BYE
-				if err := syscall.Reboot(callMode); err != nil {
-					panic(err)
-				}
-			}
-			if logslevel > 1 {
-				cu.logger.Info(fmt.Sprintf("Time for %s - %d:%d:%d\n", modePoff, timeRemaining.Hours, timeRemaining.Minutes, timeRemaining.Seconds))
 			}
 		}
 	}

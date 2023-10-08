@@ -8,56 +8,43 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	storage "github.com/korovindenis/shutdown-from-browser/v2/internal/adapter/storage/memory"
 	"github.com/korovindenis/shutdown-from-browser/v2/internal/config"
-	"github.com/korovindenis/shutdown-from-browser/v2/internal/domain/usecase"
-	"github.com/korovindenis/shutdown-from-browser/v2/internal/http/handler"
 	"github.com/korovindenis/shutdown-from-browser/v2/internal/http/middleware"
 	"github.com/korovindenis/shutdown-from-browser/v2/internal/http/middleware/logger"
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
-func Exec() error {
-	// config
-	cfg, err := config.Load()
-	if err != nil {
-		return errors.Wrap(err, "config load")
-	}
+type usecases interface {
+	IsNeedPowerOff(ctx context.Context, logslevel uint8)
+}
 
-	// logger
-	log, err := setupLogger(cfg.Env)
-	if err != nil {
-		return errors.Wrap(err, "setup logger")
-	}
+type handlers interface {
+	SetPowerOffHandler(c *gin.Context)
+	MainPageHandler(c *gin.Context)
+	GetTimePoHandler(c *gin.Context)
+}
 
-	// bd
-	computerStorage, err := storage.New()
-	if err != nil {
-		return errors.Wrap(err, "bd storage init")
-	}
-
-	// domain
-	computerUsecase := usecase.NewComputerUsecase(computerStorage, log)
-	computerHandler := handler.NewComputerHandler(computerUsecase, cfg, log)
-
+func Exec(cfg *config.Config, log *zap.Logger, computerUsecase usecases, computerhandler handlers) error {
 	// run main logic
-	go computerUsecase.IsNeedPowerOff(cfg.LogsLevel)
+	ctxCncl, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go computerUsecase.IsNeedPowerOff(ctxCncl, cfg.LogsLevel)
 
-	// http
+	// prepare http
 	gin.SetMode(cfg.HTTPServer.Mode)
 	router := gin.Default()
+
 	// middleware
 	router.Use(middleware.RequestIdMiddleware())
 	router.Use(gin.Recovery())
 	router.Use(logger.LoggingMiddleware(log))
 	router.LoadHTMLGlob(cfg.HTTPServer.TemplatesPath)
+
 	// Define endpoint
-	router.GET("/", computerHandler.MainPageHandler)
+	router.GET("/", computerhandler.MainPageHandler)
 	router.Static("/static/", "./web/build/static")
-	router.POST("/api/v1/server-power/", computerHandler.SetPowerOffHandler)
-	router.GET("/api/v1/get-time-autopoweroff/", computerHandler.GetTimePoHandler)
+	router.POST("/api/v1/server-power/", computerhandler.SetPowerOffHandler)
+	router.GET("/api/v1/get-time-autopoweroff/", computerhandler.GetTimePoHandler)
 
 	srv := &http.Server{
 		Addr:         cfg.HTTPServer.Address,
@@ -83,28 +70,4 @@ func Exec() error {
 	defer shutdown()
 
 	return srv.Shutdown(ctx)
-}
-
-func setupLogger(env string) (*zap.Logger, error) {
-	var logger *zap.Logger
-	var err error
-
-	if env == "prod" {
-		cfg := zap.NewProductionConfig()
-		logger, err = cfg.Build()
-		if err != nil {
-			return nil, errors.Wrap(err, "setupLogger")
-		}
-	} else {
-		encoderConfig := zap.NewDevelopmentEncoderConfig()
-		encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-		encoder := zapcore.NewConsoleEncoder(encoderConfig)
-
-		consoleOutput := zapcore.Lock(os.Stdout)
-		core := zapcore.NewCore(encoder, consoleOutput, zapcore.DebugLevel)
-
-		logger = zap.New(core)
-	}
-
-	return logger, nil
 }

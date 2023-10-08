@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -18,29 +17,26 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/korovindenis/shutdown-from-browser/v2/internal/config"
 	"github.com/korovindenis/shutdown-from-browser/v2/internal/domain/entity"
-	"github.com/korovindenis/shutdown-from-browser/v2/internal/domain/usecase/mocks"
 	"github.com/korovindenis/shutdown-from-browser/v2/internal/http/handler"
+	"github.com/korovindenis/shutdown-from-browser/v2/internal/http/handler/mocks"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 )
 
 type domainEntity struct {
-	computerHandler     *handler.ComputerHandler
-	mockComputerStorage *mocks.IComputerStorage
-	mockUsecase         *mocks.IComputerUsecase
-	mockError           error
+	computerHandler *handler.ComputerHandler
+	mockUsecase     *mocks.Usecase
+	mockError       error
 }
 
 func setUpDomain(t *testing.T, cfg *config.Config, logger *zap.Logger) domainEntity {
-	mockComputerStorage := mocks.NewIComputerStorage(t)
-	mockUsecase := mocks.NewIComputerUsecase(t)
-	computerHandler := handler.NewComputerHandler(mockUsecase, cfg, logger)
+	mockUsecase := mocks.New(t)
+	computerHandler := handler.New(mockUsecase, cfg, logger)
 
 	return domainEntity{
-		computerHandler:     computerHandler,
-		mockComputerStorage: mockComputerStorage,
-		mockUsecase:         mockUsecase,
+		computerHandler: computerHandler,
+		mockUsecase:     mockUsecase,
 	}
 }
 
@@ -146,7 +142,7 @@ func TestHandler_SetTimePowerOffHandler(t *testing.T) {
 		},
 		{
 			name:             "good js",
-			input:            fmt.Sprintf(mockData.String()),
+			input:            mockData.String(),
 			expectStatusCode: http.StatusOK,
 		},
 	}

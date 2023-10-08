@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 	"os"
 
@@ -8,17 +9,24 @@ import (
 	"github.com/korovindenis/shutdown-from-browser/v2/api/response"
 	"github.com/korovindenis/shutdown-from-browser/v2/internal/config"
 	"github.com/korovindenis/shutdown-from-browser/v2/internal/domain/entity"
-	"github.com/korovindenis/shutdown-from-browser/v2/internal/domain/usecase"
 	"go.uber.org/zap"
 )
 
+//go:generate mockery --name=Usecase
+type usecase interface {
+	SetPowerOff(pc entity.MyPc) error
+	GetTimePowerOff() (string, error)
+	GetModePowerOff() (string, error)
+	IsNeedPowerOff(ctx context.Context, logslevel uint8)
+}
+
 type ComputerHandler struct {
-	computerUsecase usecase.IComputerUsecase
+	computerUsecase usecase
 	logger          *zap.Logger
 	config          *config.Config
 }
 
-func NewComputerHandler(usecase usecase.IComputerUsecase, cfg *config.Config, logger *zap.Logger) *ComputerHandler {
+func New(usecase usecase, cfg *config.Config, logger *zap.Logger) *ComputerHandler {
 	return &ComputerHandler{
 		computerUsecase: usecase,
 		logger:          logger,
